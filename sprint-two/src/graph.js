@@ -34,7 +34,7 @@ Graph.prototype.hasEdge = function(fromNode, toNode) {
   var result = false;
   var i = 0;
   while (!result && i < this.edges.length) {
-    if (this.compareEdges([fromNode, toNode], this.edges[i])) {
+    if (this.edges[i].equals([fromNode, toNode]) || this.edges[i].equals([toNode, fromNode])) {
       result = true;
     }
     i++;
@@ -57,7 +57,7 @@ Graph.prototype.removeEdge = function(fromNode, toNode) {
   var removed = false;
   var i = 0;
   while (!removed) {
-    if (this.compareEdges([fromNode, toNode], this.edges[i]) && i < this.edges.length) {
+    if ((this.edges[i].equals([fromNode, toNode]) || this.edges[i].equals([toNode, fromNode])) && i < this.edges.length) {
       this.edges.splice(i, 1);
       removed = true;
     }
@@ -73,13 +73,31 @@ Graph.prototype.forEachNode = function(cb) {
   }
 };
 
-Graph.prototype.compareEdges = function(edge1, edge2) {
-  return edge1.indexOf(edge2[0]) >= 0 && edge1.indexOf(edge2[1]) >= 0
-      && edge2.indexOf(edge1[0]) >= 0 && edge2.indexOf(edge1[1]) >= 0;
-};
-
 /*
  * Complexity: What is the time complexity of the above functions?
  */
 
+Array.prototype.equals = function (array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time 
+    if (this.length != array.length)
+        return false;
+
+    for (var i = 0, l=this.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (this[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!this[i].equals(array[i]))
+                return false;       
+        }           
+        else if (this[i] != array[i]) { 
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;   
+        }           
+    }       
+    return true;
+}   
 
