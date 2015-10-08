@@ -7,19 +7,19 @@ var BinarySearchTree = function(value) {
 };
 
 BinarySearchTree.prototype.insert = function(valueToAdd) {
+  var that = this;
+  var addToTree = function(side) {
+    if (that[side] === null) {
+      that[side] = BinarySearchTree(valueToAdd);
+    } else {
+      that[side].insert(valueToAdd);
+    }
+  }
+
   if(valueToAdd < this.value) {
-    if(this.left === null) {
-      this.left = BinarySearchTree(valueToAdd);
-    } else {
-      this.left.insert(valueToAdd);      
-    }
+    addToTree('left');
   } else {
-    if(this.right === null) {
-      this.right = BinarySearchTree(valueToAdd);
-    } else {
-      console.log(this.right);
-      this.right.insert(valueToAdd);      
-    }
+    addToTree('right');
   }
 };
 
@@ -30,6 +30,7 @@ BinarySearchTree.prototype.contains = function(value) {
 BinarySearchTree.prototype.depthFirstLog = function(cb) {
   //
 };
+
 /*
  * Complexity: What is the time complexity of the above functions?
  */
