@@ -23,8 +23,23 @@ BinarySearchTree.prototype.insert = function(valueToAdd) {
   }
 };
 
-BinarySearchTree.prototype.contains = function(value) {
-  //
+BinarySearchTree.prototype.contains = function(valueToSearch) {
+  var result = false;
+  var checkNode = function(node) {
+    if (node !== null) {
+      if (node.value === valueToSearch) {
+        result = true;
+      } else {
+        if (valueToSearch < node.value) {
+          checkNode(node.left);
+        } else {
+          checkNode(node.right);
+        }
+      }
+    }
+  }
+  checkNode(this);
+  return result;
 };
 
 BinarySearchTree.prototype.depthFirstLog = function(cb) {
