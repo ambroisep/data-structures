@@ -32,13 +32,9 @@ Graph.prototype.removeNode = function(node) {
 // Returns a boolean indicating whether two specified nodes are connected.  Pass in the values contained in each of the two nodes.
 Graph.prototype.hasEdge = function(fromNode, toNode) {
   var result = false;
-  var compareEdges = function(edge1, edge2) {
-    return edge1.indexOf(edge2[0]) >= 0 && edge1.indexOf(edge2[1]) >= 0
-        && edge2.indexOf(edge1[0]) >= 0 && edge2.indexOf(edge1[1]) >= 0;
-  }
   var i = 0;
   while (!result && i < this.edges.length) {
-    if (compareEdges([fromNode, toNode], this.edges[i])) {
+    if (this.compareEdges([fromNode, toNode], this.edges[i])) {
       result = true;
     }
     i++;
@@ -58,11 +54,30 @@ Graph.prototype.addEdge = function(fromNode, toNode) {
 // ------------------------
 // Remove an edge between any two specified (by value) nodes.
 Graph.prototype.removeEdge = function(fromNode, toNode) {
+  if (this.hasEdge(fromNode, toNode)) {
+    var removed = false;
+    var i = 0;
+    while (!removed) {
+      if (this.compareEdges([fromNode, toNode], this.edges[i])) {
+        this.edges.splice(i, 1);
+        removed = true;
+      }
+      i++;
+    }
+  }
 };
 
 // ------------------------
 // Pass in a callback which will be executed on each node of the graph.
 Graph.prototype.forEachNode = function(cb) {
+  for (var i = 0; i < this.nodes.length; i++) {
+    cb(this.nodes[i]);
+  }
+};
+
+Graph.prototype.compareEdges = function(edge1, edge2) {
+  return edge1.indexOf(edge2[0]) >= 0 && edge1.indexOf(edge2[1]) >= 0
+      && edge2.indexOf(edge1[0]) >= 0 && edge2.indexOf(edge1[1]) >= 0;
 };
 
 /*
