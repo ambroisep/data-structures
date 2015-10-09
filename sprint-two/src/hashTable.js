@@ -1,29 +1,54 @@
 
 
 var HashTable = function() {
-  this._limit = 8;
+  this._limit = 2;
   this._storage = LimitedArray(this._limit);
+  this._tuples = 0;
 };
 
 HashTable.prototype.insert = function(k, v) {
   var index = getIndexBelowMaxForKey(k, this._limit);
-  if (this._storage.get(index) === undefined) {
-    this._storage.set(index, [[k ,v]]);
-  } else {
-    var bucket = this._storage.get(index).slice();
-    var isInBucket = false;
-    var i = 0;
-    while (!isInBucket && i < bucket.length) {
-      if (bucket[i][0] === k) {
-        bucket[i][1] = v;
-        isInBucket = true;
+  var that = this;
+  var addToStorage =  function(ind, valueToAdd) {
+    if (that._storage.get(ind) === undefined) {
+      that._storage.set(ind, [valueToAdd]);
+      that._tuples++;
+    } else {
+      var bucket = that._storage.get(ind).slice();
+      var isInBucket = false;
+      var i = 0;
+      while (!isInBucket && i < bucket.length) {
+        if (bucket[i][0] === valueToAdd[0]) {
+          bucket[i][1] = valueToAdd[1];
+          isInBucket = true;
+        }
+        i++;
       }
-      i++;
+      if (!isInBucket) {
+        bucket.push(valueToAdd);
+        that._tuples++;
+      }
+      that._storage.set(ind, bucket);
     }
-    if (!isInBucket) {
-      bucket.push([k, v]);
-    }
-    this._storage.set(index, bucket);
+  };
+  addToStorage(index, [k, v]);
+
+ if (that._limit * 0.75 < that._tuples) {
+    // double limit
+    that._limit *= 2;
+    // recreate storage
+    var newStorage = LimitedArray(that._limit);
+    that._storage.each(function(bucket) {
+      _.each(bucket, function(tuple) {
+        var index = getIndexBelowMaxForKey(tuple[0], that._limit);
+         console.log(tuple[0]);
+        addToStorage(index, tuple);
+      });
+    });
+     newStorage.each(function(i) {
+       console.log(i);
+     });
+    that._storage = newStorage;
   }
 };
 
