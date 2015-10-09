@@ -11,9 +11,7 @@ var LinkedList = function() {
     } else {
       list.tail.next = newTail;
       list.tail = newTail;
-    }
-    
-    
+    }    
   };
 
   list.removeHead = function() {
@@ -49,7 +47,6 @@ var LinkedList = function() {
         }
       }
     }
-    //first check if the node we want to delete is the head
     if (list.head !== null) {
       if (list.head.value === target) {
       list.removeHead();
@@ -58,7 +55,6 @@ var LinkedList = function() {
       }
     }
   }
-
   return list;
 };
 
