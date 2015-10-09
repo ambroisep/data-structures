@@ -25,18 +25,39 @@ var LinkedList = function() {
 
   list.contains = function(target) {
     var answer = false;
-    var elementContains = function(element) {
-      if (element !== null) {
-        if (element.value === target) {
+    var elementContains = function(node) {
+      if (node !== null) {
+        if (node.value === target) {
           answer = true;
         } else {
-          elementContains(element.next);
+          elementContains(node.next);
         }
       }
     }
     elementContains(list.head)
     return answer;
   };
+
+  list.removeFirstOccurence = function(target) {
+    var removeOrContinue = function(node, nodeBefore) {
+      if (node !== null) {
+        if (node.value === target) {
+          nodeBefore.next = node.next;
+          // delete node;
+        } else {
+          removeOrContinue(node.next, node);
+        }
+      }
+    }
+    //first check if the node we want to delete is the head
+    if (list.head !== null) {
+      if (list.head.value === target) {
+      list.removeHead();
+      } else {
+        removeOrContinue(list.head.next, list.head)
+      }
+    }
+  }
 
   return list;
 };
