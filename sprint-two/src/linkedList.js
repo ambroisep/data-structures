@@ -1,5 +1,5 @@
 var LinkedList = function() {
-  var list = [];
+  var list = {};
   list.head = null;
   list.tail = null;
 
@@ -59,11 +59,9 @@ var LinkedList = function() {
 };
 
 var Node = function(value) {
-  var node = [];
-
+  var node = {};
   node.value = value;
   node.next = null;
-
   return node;
 };
 
