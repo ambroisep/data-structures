@@ -31,7 +31,7 @@ HashTable.prototype.retrieve = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   var result;
   if (this._storage.get(index) !== undefined) {
-    var bucket = this._storage.get(index) ;
+    var bucket = this._storage.get(index);
     var i = 0;
     while (result === undefined && i < bucket.length) {
       if(bucket[i][0] === k) {
@@ -45,7 +45,7 @@ HashTable.prototype.retrieve = function(k) {
 
 HashTable.prototype.remove = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
-  if (this._storage.get(index) !== null) {
+  if (this._storage.get(index) !== undefined) {
     var bucket = this._storage.get(index).splice();
     var removed = false;
     var i = 0;
