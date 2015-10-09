@@ -29,7 +29,7 @@ DoublyLinkedList.methods = {
   removeTail: function() {
     var newTail = this.tail.previous;
     newTail.next = null;
+    this.tail.previous = null;
     this.tail = newTail;
-    newTail = null;
   }
 };
