@@ -1,7 +1,7 @@
 
 
 var HashTable = function() {
-  this._limit = 8;
+  this._limit = 2;
   this._storage = LimitedArray(this._limit);
   this._tuples = 0;
 };
@@ -9,33 +9,9 @@ var HashTable = function() {
 HashTable.prototype.insert = function(k, v) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   var that = this;
-  var addToStorage =  function(storage, ind, valueToAdd) {
-    var tupleIncrement = 0;
-    if (storage.get(ind) === undefined) {
-      storage.set(ind, [valueToAdd]);
-      tupleIncrement++;
-    } else {
-      var bucket = storage.get(ind).slice();
-      var isInBucket = false;
-      var i = 0;
-      while (!isInBucket && i < bucket.length) {
-        if (bucket[i][0] === valueToAdd[0]) {
-          bucket[i][1] = valueToAdd[1];
-          isInBucket = true;
-        }
-        i++;
-      }
-      if (!isInBucket) {
-        bucket.push(valueToAdd);
-        tupleIncrement++;
-      }
-      storage.set(ind, bucket);
-    }
-    return tupleIncrement;
-  };
-  this._tuples += addToStorage(this._storage, index, [k, v]);
+  this._tuples += this.addToStorage(this._storage, index, [k, v]);
 
- if (this._limit * 0.75 < this._tuples) {
+  if (this._limit * 0.75 < this._tuples) {
   // double limit
   this._limit *= 2;
   // recreate storage
@@ -43,7 +19,7 @@ HashTable.prototype.insert = function(k, v) {
   this._storage.each(function(bucket) {
     _.each(bucket, function(tuple) {
       var index = getIndexBelowMaxForKey(tuple[0], this._limit);
-      addToStorage(newStorage, index, tuple);
+      that.addToStorage(newStorage, index, tuple);
     });
   });
    newStorage.each(function(i) {
@@ -86,6 +62,31 @@ HashTable.prototype.remove = function(k) {
     }
     this._storage.set(index, bucket);
   }
+};
+
+HashTable.prototype.addToStorage = function(storage, ind, valueToAdd) {
+  var tupleIncrement = 0;
+  if (storage.get(ind) === undefined) {
+    storage.set(ind, [valueToAdd]);
+    tupleIncrement++;
+  } else {
+    var bucket = storage.get(ind).slice();
+    var isInBucket = false;
+    var i = 0;
+    while (!isInBucket && i < bucket.length) {
+      if (bucket[i][0] === valueToAdd[0]) {
+        bucket[i][1] = valueToAdd[1];
+        isInBucket = true;
+      }
+      i++;
+    }
+    if (!isInBucket) {
+      bucket.push(valueToAdd);
+      tupleIncrement++;
+    }
+    storage.set(ind, bucket);
+  }
+  return tupleIncrement;
 };
 
 /*
