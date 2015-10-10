@@ -1,7 +1,7 @@
 
 
 var HashTable = function() {
-  this._limit = 2;
+  this._limit = 16;
   this._storage = LimitedArray(this._limit);
   this._tuples = 0;
 };
@@ -9,22 +9,20 @@ var HashTable = function() {
 HashTable.prototype.insert = function(k, v) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   var that = this;
-  this._tuples += this.addToStorage(this._storage, index, [k, v]);
+  this._tuples += this.addToStorage(that._storage, index, [k, v]);
 
   if (this._limit * 0.75 < this._tuples) {
-  // double limit
-  this._limit *= 2;
-  // recreate storage
-  var newStorage = LimitedArray(this._limit);
-  this._storage.each(function(bucket) {
-    _.each(bucket, function(tuple) {
-      var index = getIndexBelowMaxForKey(tuple[0], this._limit);
-      that.addToStorage(newStorage, index, tuple);
+    // double limit
+    this._limit *= 2;
+    // recreate storage
+    var newStorage = LimitedArray(this._limit);
+    this._storage.each(function(bucket) {
+      _.each(bucket, function(tuple) {
+        var index = getIndexBelowMaxForKey(tuple[0], that._limit);
+        that.addToStorage(newStorage, index, tuple);
+      });
     });
-  });
-   newStorage.each(function(i) {
-   });
-  this._storage = newStorage;
+    this._storage = newStorage;
   }
 };
 
@@ -46,6 +44,7 @@ HashTable.prototype.retrieve = function(k) {
 
 HashTable.prototype.remove = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
+  var that = this;
   if (this._storage.get(index) !== undefined) {
     var currentBucket = this._storage.get(index);
     var bucket = [];
@@ -60,6 +59,18 @@ HashTable.prototype.remove = function(k) {
       bucket = undefined;
     }
     this._storage.set(index, bucket);
+  }
+
+  if(this._limit * 0.25 > this._tuples) {
+    this._limit = Math.ceil(this._limit / 2);
+    var newStorage = LimitedArray(this._limit);
+    this._storage.each(function(bucket) {
+      _.each(bucket, function(tuple) {
+        var index = getIndexBelowMaxForKey(tuple[0], that._limit);
+        that.addToStorage(newStorage, index, tuple);
+      });
+    });
+  this._storage = newStorage;
   }
 };
 
