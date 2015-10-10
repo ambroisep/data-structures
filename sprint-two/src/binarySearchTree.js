@@ -4,18 +4,20 @@ var BinarySearchTree = function(value) {
   binarySearchTree.left = null;
   binarySearchTree.right = null;
   binarySearchTree.maxDepth = 0;
-  // binarySearchTree.leastDeep = null;
-  binarySearchTree.deepest = value;
+  binarySearchTree.minDepth = 0;
+  binarySearchTree.leastDeep = null;
+  binarySearchTree.deepest = null;
   return binarySearchTree;
 };
 
 BinarySearchTree.prototype.insert = function(valueToAdd) {
   var depth = 0;
+  var treeToAdd = BinarySearchTree(valueToAdd);
   var addToTree = function(tree) {
     depth++;
     var whichAction = function(side) {
       if (tree[side] === null) {
-        tree[side] = BinarySearchTree(valueToAdd);
+        tree[side] = treeToAdd;
       } else {
         addToTree(tree[side]);
       }
@@ -31,7 +33,7 @@ BinarySearchTree.prototype.insert = function(valueToAdd) {
 
   if (this.maxDepth < depth) {
     this.maxDepth = depth;
-    this.deepest = valueToAdd;
+    this.deepest = treeToAdd;
   }
 };
 
