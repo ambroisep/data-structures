@@ -41,6 +41,16 @@ treeMethods.removeFromParent = function() {
     });
     this.parent = undefined;
   }
+};
+
+treeMethods.traverse = function(cb) {
+  var applyCB = function(tree) {
+    cb(tree.value);
+    for (var i = 0; i < tree.children.length; i++) {
+      applyCB(tree.children[i]);
+    }
+  }
+  applyCB(this);
 }
 
 /*
