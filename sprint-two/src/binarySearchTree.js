@@ -49,8 +49,29 @@ BinarySearchTree.prototype.depthFirstLog = function(cb) {
       callbackOnNode(node.left);
       callbackOnNode(node.right);
     }
-  }
+  };
   callbackOnNode(this);
+};
+
+BinarySearchTree.prototype.breadthFirstLog = function(cb) {
+  var applyCallBackToLevel = function(nodes) {
+    var values = _.map(nodes, function(i) { return i.value; });
+    var children = [];
+    _.each(nodes, function(i) {
+      if (i.left) {
+        children.push(i.left);
+      }
+      if (i.right) {
+        children.push(i.right);
+      }
+    });
+    _.each(values, cb);
+    if (children.length > 0) {
+      applyCallBackToLevel(children);
+    }
+  };
+
+  applyCallBackToLevel([this]);
 };
 
 /*
