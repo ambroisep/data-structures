@@ -47,15 +47,14 @@ HashTable.prototype.retrieve = function(k) {
 HashTable.prototype.remove = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   if (this._storage.get(index) !== undefined) {
-    var bucket = this._storage.get(index).splice();
-    var removed = false;
-    var i = 0;
-    while (!removed && i < bucket.length) {
-      if(bucket[i][0] === k) {
-        bucket = bucket.splice(i, 1);
-        removed = true;
+    var currentBucket = this._storage.get(index);
+    var bucket = [];
+    for (var i = 0; i < currentBucket.length; i++) {
+      if(currentBucket[i][0] !== k) {
+        bucket.push(currentBucket[i]);
+      } else {
+        this._tuples--;
       }
-      i++;
     }
     if (bucket.length === 0) {
       bucket = undefined;
