@@ -1,7 +1,7 @@
 
 
 var HashTable = function() {
-  this._limit = 2;
+  this._limit = 8;
   this._storage = LimitedArray(this._limit);
   this._tuples = 0;
 };
@@ -9,12 +9,13 @@ var HashTable = function() {
 HashTable.prototype.insert = function(k, v) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   var that = this;
-  var addToStorage =  function(ind, valueToAdd) {
-    if (that._storage.get(ind) === undefined) {
-      that._storage.set(ind, [valueToAdd]);
-      that._tuples++;
+  var addToStorage =  function(storage, ind, valueToAdd) {
+    var tupleIncrement = 0;
+    if (storage.get(ind) === undefined) {
+      storage.set(ind, [valueToAdd]);
+      tupleIncrement++;
     } else {
-      var bucket = that._storage.get(ind).slice();
+      var bucket = storage.get(ind).slice();
       var isInBucket = false;
       var i = 0;
       while (!isInBucket && i < bucket.length) {
@@ -26,29 +27,28 @@ HashTable.prototype.insert = function(k, v) {
       }
       if (!isInBucket) {
         bucket.push(valueToAdd);
-        that._tuples++;
+        tupleIncrement++;
       }
-      that._storage.set(ind, bucket);
+      storage.set(ind, bucket);
     }
+    return tupleIncrement;
   };
-  addToStorage(index, [k, v]);
+  this._tuples += addToStorage(this._storage, index, [k, v]);
 
- if (that._limit * 0.75 < that._tuples) {
-    // double limit
-    that._limit *= 2;
-    // recreate storage
-    var newStorage = LimitedArray(that._limit);
-    that._storage.each(function(bucket) {
-      _.each(bucket, function(tuple) {
-        var index = getIndexBelowMaxForKey(tuple[0], that._limit);
-         console.log(tuple[0]);
-        addToStorage(index, tuple);
-      });
+ if (this._limit * 0.75 < this._tuples) {
+  // double limit
+  this._limit *= 2;
+  // recreate storage
+  var newStorage = LimitedArray(this._limit);
+  this._storage.each(function(bucket) {
+    _.each(bucket, function(tuple) {
+      var index = getIndexBelowMaxForKey(tuple[0], this._limit);
+      addToStorage(newStorage, index, tuple);
     });
-     newStorage.each(function(i) {
-       console.log(i);
-     });
-    that._storage = newStorage;
+  });
+   newStorage.each(function(i) {
+   });
+  this._storage = newStorage;
   }
 };
 
